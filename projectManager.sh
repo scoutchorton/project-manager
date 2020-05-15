@@ -179,7 +179,7 @@ function __proj {
 
 		#For any more than 2 arguments
 		*)
-			1>&2 echo -e "${_BAD_B}ERR:${_BAD} More arguments than expected. Run with the \`help\` argument to see usage." && return 1
+			1>&2 echo -e "${_BAD_B}ERR:${_BAD} More arguments than expected. Run with the \`--help\` argument to see usage." && return 1
 			;;
 	esac
 	return 0
