@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+#
+# Project Manager v1.0 Installer
+#
+VERSION="1.0"
+
+echo ""
+echo "########################"
+echo "# PREPARING TO INSTALL #"
+echo "########################"
+
+#
+# Minify script
+#
+
+echo "MINIFYING..."
+#Create file to manipulate
+touch projectManager.min.sh
+#Remove initial whitespace and empty lines from original program to make a more condensed script
+sed 's/^\s*//g;/^$/d' projectManager.sh > projectManager.min.sh
+echo "COMPLETE."
+
+echo ""
+echo "##############"
+echo "# INSTALLING #"
+echo "##############"
+
+#
+# Move script to home directory
+#
+
+echo "CHECKING FOR INSTALLED VERSION..."
+#Check if file already exists
+if [ -f "/home/$USER/.project-manager" ]; then
+	#Try to get currently installed version based on existing file
+	INSTALLED_VERSION="$(sed '2!d;s/#PROJECTMANAGER v\([0-9]\+.[0-9]\+\)\s*$/\1/' ~/.project-manager)"
+	#If a version was able to be found
+	if [ -n "$INSTALLED_VERSION" ]; then
+		echo "$INSTALLED_VERSION INSTALLED."
+		echo "OVERWRITING WITH $VERSION..."
+	#If a version wasn't able to be found
+	else
+		echo "UNKNOWN FILE."
+		echo "BACKING UP AND INSTALLING $VERSION..."
+		#Move to a new file with date appended to file name
+		mv "/home/$USER/.project-manager" "/home/$USER/.project-manager-$(date '+%m%d%y-%H%M%S')" 2> /dev/null
+		[ "$?" -gt "0" ] && 1>&2 echo "ERR: COULD NOT PERFORM BACK UP." && exit 1
+	fi
+#If no file exists
+else
+	echo "NO VERSION INSTALLED. INSTALLING $VERSION..."
+fi
+
+#Copy new version
+cp -f "./projectManager.min.sh" "/home/$USER/.project-manager" #2> /dev/null
+[ "$?" -gt "0" ] && 1>&2 echo "ERR: COULD NOT COPY NEW VERSION." && exit 1
+echo "INSTALLED $VERSION."
+
+echo ""
+echo "#####################"
+echo "# POST INSTALLATION #"
+echo "#####################"
+
+#
+# Adjust options
+#
+
+#Create variable for custom command
+CMD=
+while [ -z "$CMD" ]; do
+	echo -n "COMMAND TO RUN PROJECT MANAGER: "
+	read CMD
+	#Check if command is invalid
+	CMD="$(echo "$CMD" | grep -o '^[^ \t\n]\+$')"
+	if [ -z "$CMD" ]; then
+		1>&2 echo "ERR: PLEASE ENTER A VALID COMMAND"
+	#Valid command
+	else
+		sed -i "s/\(PROJECTS_COMMAND=\)\".\+\"\$/\1\"$CMD\"/" ~/.project-manager
+		[ "$?" -gt '0' ] && 1>&2 echo "ERR: COULD NOT SET PROJECT COMMAND." && exit 1
+	fi
+done
+
+#Create variable for custom location
+LOC=
+while [ -z "$LOC" ]; do
+	echo "DEFAULT LOCATION: /home/$USER/Programming"
+	echo -n "PROJECT FOLDER LOCATION: "
+	read LOC
+	#Check if a folder was entered
+	if [ -z "$LOC" ]; then
+		echo "NO FOLDER ENTERED. USING DEFAULT."
+		LOC="/home/$USER/Programming"
+	fi
+	#Expand ~
+	LOC="$(echo "$LOC" | sed "s/~/\/home\/$USER/")"
+	#Check if folder doesn't exist and repeat if so
+	if [ ! -d "$LOC" ]; then
+		1>&2 echo "FOLDER DOES NOT EXIST."
+		LOC=
+	else
+		sed -i "s/^\(PROJECTS_DIR=\)\".\+\"\$/\1\"$(echo "$LOC" | sed 's/\//\\\//g')\"/" ~/.project-manager 2> /dev/null
+		[ "$?" -gt '0' ] && 1>&2 echo "ERR: COULD NOT SET PROJECT FOLDER." && exit 1
+	fi
+done
+echo "PROJECT FOLDER: $LOC"
+
+echo ""
+echo "###############"
+echo "# INTEGRATING #"
+echo "###############"
+
+#
+# Integrate to .bashrc
+#
+
+#Remove previous versions sourced into .bashrc
+sed -i '/#PROJECT MANAGER v[0-9]\+.[0-9]\+$/d' "/home/$USER/.bashrc"
+#Source new version into .bashrc
+echo -e "source /home/$USER/.project-manager #PROJECT MANAGER v$VERSION" >> /home/$USER/.bashrc 2> /dev/null
+[ "$?" -gt '0' ] && 1>&2 echo "ERR: COULD NOT INTEGRATE NEW VERSION." && exit 1
+
+echo "INTEGRATION COMPLETE."
+
+echo ""
+echo "PROJECT MANAGER v$VERSION IS NOW INSTALLED."
+rm ./projectManager.min.sh
+echo "RESTART BASH FOR CHANGES TO TAKE AFFECT."
+
+#Source the project manager to get functions in current execution
+source /home/$USER/.project-manager
+
+#Run help
+__proj -h
+
+#Exit cleanly
+exit 0
