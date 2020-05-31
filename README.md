@@ -28,3 +28,6 @@ $ bash ./install
 ##### `proj LANGUAGE PROJECT`
  - If PROJECT exists, change to the folder, otherwise prompt to create folder
 
+##### `proj -h|--help`
+ - Display information about usage
+
