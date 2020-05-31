@@ -13,14 +13,18 @@ $ bash ./install
 
 ### Usage
 
-##### `pp [-l|-ls]`
- - List the project folder files.
-  
-##### `pp <language>`
- - If the language exists, change to the folder, otherwise prompt to create folder.
-  
-##### `pp <language> <project>`
- - If the project exists, change to the folder, otherwise prompt to create folder.
-  
-##### `pp -h|--help`
- - Display this menu.
+##### `proj`
+ - Change to project folder
+
+##### `proj -l|-ls`
+ - List the project folder files
+
+##### `proj LANGUAGE`
+ - If LANGUAGE exists, change to the folder, otherwise prompt to create folder
+
+##### `proj LANGUAGE [-l|-ls]`
+ - List the contents of the folder for LANGUAGE
+
+##### `proj LANGUAGE PROJECT`
+ - If PROJECT exists, change to the folder, otherwise prompt to create folder
+

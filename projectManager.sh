@@ -1,5 +1,5 @@
 #!/usr/bin/env bash 
-#PROJECTMANAGER v1.0
+#PROJECTMANAGER v1.1
 #  Manage a programming projects folder automagically based on langauge and project. 
 #  (c) 2020 scoutchorton
 
@@ -15,8 +15,8 @@ alias $PROJECTS_COMMAND='__proj'
 # Project manager
 #
 
+export PROJECTS_DIR="/home/scoutchorton/Programming"
 function __proj {
-	PROJECTS_DIR="/home/scoutchorton/Programming"
 	
 	#
 	# Colors
@@ -50,10 +50,11 @@ function __proj {
 		#Usage information to parse later
 		usageArray=(\
 		"$PROJECTS_COMMAND;Change to project folder." \
-		"$PROJECTS_COMMAND [-l|-ls];List the project folder files." \
-		"$PROJECTS_COMMAND <language>;If the language exists, change to the folder, otherwise prompt to create folder." \
-		"$PROJECTS_COMMAND <language> <project>;If the project exists, change to the folder, otherwise prompt to create folder."\
-		"$PROJECTS_COMMAND -h|--help;Display this menu."
+		"$PROJECTS_COMMAND -l|-ls;List the project folder files." \
+		"$PROJECTS_COMMAND LANGUAGE;If LANGUAGE exists, change to the folder, otherwise prompt to create folder." \
+		"$PROJECTS_COMMAND LANGUAGE [-l|-ls];List the contents of the folder for LANGUAGE." \
+		"$PROJECTS_COMMAND LANGUAGE PROJECT;If PROJECT exists, change to the folder, otherwise prompt to create folder." \
+		"$PROJECTS_COMMAND -h|--help;Display information about usage."
 		)
 		#Length of the longest command
 		len=0
@@ -74,7 +75,7 @@ function __proj {
 		done
 		#Loop through command list
 		for cmd in ${usageArray[@]}; do
-			printf "  %-*s- %s\n" "$len" "$(echo $cmd | cut -d ';' -f 1)" "$(echo $cmd | cut -d ';' -f 2)"
+			printf "  %-*s- %s\n" "$len" "$(echo -e "$(echo $cmd | cut -d ';' -f 1)")" "$(echo -e "$(echo $cmd | cut -d ';' -f 2)")"
 		done
 		#Revert IFS
 		unset IFS
@@ -197,8 +198,9 @@ function __projects {
 	local languages=$(find $PROJECTS_DIR/ -maxdepth 1 -type d,l | sed "s:$PROJECTS_DIR/::g;/^$/d;s: :-:g" | tr "\n" ' ') 2> /dev/null || return 1
 	#Gets the first word after the command
 	local projNames=${COMP_WORDS[1]}
+
 	#Check if language name only has one hit in projects list (none other matches), and also that the word is a finished language
-	if [ "$(echo $languages | tr ' ' "\n" | sed -n "/^$projNames/p" | wc -w)" == '1' ] && [ -n "$(echo $languages | tr ' ' "\n" | sed -n "/^$projNames$/p")" ]; then
+	if [ -n "$(echo $languages | tr ' ' "\n" | sed -n "/^$projNames/p")" ] && [ "${#COMP_WORDS[@]}" == "3" ]; then
 		#Get names of project folders within the language
 		local projects=$(find $PROJECTS_DIR/$projNames -maxdepth 1  -type d,l | sed "s:$PROJECTS_DIR/$projNames/*::g;/^$/d;s: :-:g" | tr "\n" ' ')
 		#Get suggestions based on projects and the user's uncompleted word
