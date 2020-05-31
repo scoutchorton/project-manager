@@ -13,21 +13,21 @@ $ bash ./install
 
 ### Usage
 
-##### `proj`
+##### `project-manager`
  - Change to project folder
 
-##### `proj -l|-ls`
+##### `project-manager -l|-ls`
  - List the project folder files
 
-##### `proj LANGUAGE`
+##### `project-manager LANGUAGE`
  - If LANGUAGE exists, change to the folder, otherwise prompt to create folder
 
-##### `proj LANGUAGE [-l|-ls]`
+##### `project-manager LANGUAGE [-l|-ls]`
  - List the contents of the folder for LANGUAGE
 
-##### `proj LANGUAGE PROJECT`
+##### `project-manager LANGUAGE PROJECT`
  - If PROJECT exists, change to the folder, otherwise prompt to create folder
 
-##### `proj -h|--help`
+##### `project-manager -h|--help`
  - Display information about usage
 
