@@ -1,5 +1,5 @@
 #!/usr/bin/env bash 
-#PROJECTMANAGER v1.1
+#PROJECTMANAGER v1.2
 #  Manage a programming projects folder automagically based on langauge and project. 
 #  (c) 2020 scoutchorton
 
@@ -61,7 +61,7 @@ function __proj {
 		
 		#Header
 		echo -e ""
-		echo -e "Project Manager v1.0"
+		echo -e "Project Manager v1.2"
 		echo -e "  Neatly and automagically manage programming projects by language from the command line."
 		echo -e ""
 		echo -e "Usage:"
@@ -166,6 +166,7 @@ function __proj {
 						else
 							#Make project directory and change into it
 							mkdir $PROJECTS_DIR/$1/$2 2> /dev/null && cd $PROJECTS_DIR/$1/$2 || (1>&2 echo -e "${_BAD_B}ERR:${_BAD} Connot create directory for $1/$2." && return 1)
+							[ -d ../.template ] && cp -r ../.template/* ./
 						fi
 					fi
 				#If language folder doesn't exist
@@ -195,14 +196,16 @@ function __projects {
 	# Since the first argument is always expected to be a language name, you can use ${COMP_WORDS[1]} to process the language specifically.
 	#
 	#Get names of language folders
-	local languages=$(find $PROJECTS_DIR/ -maxdepth 1 -type d,l | sed "s:$PROJECTS_DIR/::g;/^$/d;s: :-:g" | tr "\n" ' ') 2> /dev/null || return 1
+	#local languages=$(find $PROJECTS_DIR/ -maxdepth 1 -type d,l | sed "s:$PROJECTS_DIR/::g;/^$/d;s: :-:g" | tr "\n" ' ') 2> /dev/null || return 1
+	local languages=$(find $PROJECTS_DIR/ -maxdepth 1 -type d,l | sed "s:$PROJECTS_DIR/::g;s:^\..\+$::g;/^$/d" | tr "\n" ' ') 2> /dev/null || return 1
 	#Gets the first word after the command
 	local projNames=${COMP_WORDS[1]}
 
 	#Check if language name only has one hit in projects list (none other matches), and also that the word is a finished language
 	if [ -n "$(echo $languages | tr ' ' "\n" | sed -n "/^$projNames/p")" ] && [ "${#COMP_WORDS[@]}" == "3" ]; then
 		#Get names of project folders within the language
-		local projects=$(find $PROJECTS_DIR/$projNames -maxdepth 1  -type d,l | sed "s:$PROJECTS_DIR/$projNames/*::g;/^$/d;s: :-:g" | tr "\n" ' ')
+		#local projects=$(find $PROJECTS_DIR/$projNames -maxdepth 1  -type d,l | sed "s:$PROJECTS_DIR/$projNames/*::g;/^$/d;s: :-:g" | tr "\n" ' ')
+		local projects=$(find $PROJECTS_DIR/$projNames -maxdepth 1  -type d,l | sed "s:$PROJECTS_DIR/$projNames/*::g;s:^\..\+$::g;/^$/d" | tr "\n" ' ')
 		#Get suggestions based on projects and the user's uncompleted word
 		COMPREPLY=( $(compgen -W "$projects" -- "${COMP_WORDS[COMP_CWORD]}") )
 		return 0
