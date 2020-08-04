@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# Project Manager v1.2 Installer
+# Project Manager v1.3 Installer
 #
-VERSION="1.2"
+VERSION="1.3"
 
 echo ""
 echo "########################"
@@ -100,7 +100,7 @@ while [ -z "$LOC" ]; do
 		1>&2 echo "FOLDER DOES NOT EXIST."
 		LOC=
 	else
-		sed -i "s/^\(PROJECTS_DIR=\)\".\+\"\$/\1\"$(echo "$LOC" | sed 's/\//\\\//g')\"/" ~/.project-manager 2> /dev/null
+		sed -i "s/^\(export PROJECTS_DIR=\).*$/\1\"$(echo "$LOC" | sed 's/\//\\\//g')\"/" ~/.project-manager 2> /dev/null
 		[ "$?" -gt '0' ] && 1>&2 echo "ERR: COULD NOT SET PROJECT FOLDER." && exit 1
 	fi
 done

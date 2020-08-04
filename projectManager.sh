@@ -1,5 +1,5 @@
 #!/usr/bin/env bash 
-#PROJECTMANAGER v1.2
+#PROJECTMANAGER v1.3
 #  Manage a programming projects folder automagically based on langauge and project. 
 #  (c) 2020 scoutchorton
 
@@ -15,7 +15,7 @@ alias $PROJECTS_COMMAND='__proj'
 # Project manager
 #
 
-export PROJECTS_DIR="/home/scoutchorton/Programming"
+export PROJECTS_DIR="/home/$USER/Programming"
 function __proj {
 	
 	#
