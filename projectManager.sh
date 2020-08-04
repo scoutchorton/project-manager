@@ -17,7 +17,6 @@ alias $PROJECTS_COMMAND='__proj'
 
 export PROJECTS_DIR="/home/$USER/Programming"
 function __proj {
-	
 	#
 	# Colors
 	#
@@ -61,7 +60,7 @@ function __proj {
 		
 		#Header
 		echo -e ""
-		echo -e "Project Manager v1.2"
+		echo -e "Project Manager v1.3"
 		echo -e "  Neatly and automagically manage programming projects by language from the command line."
 		echo -e ""
 		echo -e "Usage:"
